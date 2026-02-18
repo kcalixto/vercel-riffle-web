@@ -4,7 +4,12 @@ import { getAvailableNumbers, reserveNumbers } from "@/lib/sheets"
 import { redirect } from "next/navigation"
 
 export async function fetchAvailableNumbers(): Promise<number[]> {
-  return getAvailableNumbers()
+  try {
+    return await getAvailableNumbers()
+  } catch (error) {
+    console.error("[v0] Failed to fetch available numbers:", error)
+    return []
+  }
 }
 
 export async function submitRaffle(formData: FormData) {

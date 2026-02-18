@@ -1,7 +1,24 @@
 import { google } from "googleapis"
 
+function formatPrivateKey(key: string | undefined): string | undefined {
+  if (!key) return undefined
+
+  // Remove surrounding quotes if present (common when copy-pasting)
+  let formatted = key.replace(/^["']|["']$/g, "")
+
+  // Replace all literal \n sequences with real newlines
+  formatted = formatted.replace(/\\n/g, "\n")
+
+  // If the key doesn't have proper PEM headers, it might be base64-only
+  if (!formatted.includes("-----BEGIN")) {
+    formatted = `-----BEGIN PRIVATE KEY-----\n${formatted}\n-----END PRIVATE KEY-----\n`
+  }
+
+  return formatted
+}
+
 function getAuth() {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n")
+  const privateKey = formatPrivateKey(process.env.GOOGLE_PRIVATE_KEY)
 
   return new google.auth.GoogleAuth({
     credentials: {
